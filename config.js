@@ -1,4 +1,5 @@
 import dotenv from 'dotenv'
+import fs from 'fs'
 
 dotenv.config()
 
@@ -35,6 +36,11 @@ export default {
 
 	stripe: {
 		privateKey: process.env['STRIPE_PRIVATE_KEY']
-	}
+	},
+
+	keys: {
+		private: await fs.promises.readFile('./idp.key'),
+		public: await fs.promises.readFile('./idp.key.pub')
+	},
 
 }
