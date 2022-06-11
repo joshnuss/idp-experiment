@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id Int @id @default(autoincrement())
+  name String
+  members Member[]
+  product String
+  stripeCustomerId String?
+  stripeSubscriptionId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  memberships Member[]
+
+  email String @unique
+  name String
+  provider String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Member {
+  id Int @id @default(autoincrement())
+
+  account Account @relation(fields: [accountId], references: [id])
+  accountId Int
+
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+
+  owner Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
