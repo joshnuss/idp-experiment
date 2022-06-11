@@ -1,6 +1,7 @@
 import config from '$config'
 import { getCookieInfo } from '$lib/cookies'
 import db from '$lib/db'
+import { sign, generateRefreshToken } from '$lib/jwt'
 import Stripe from 'stripe'
 
 const stripe = new Stripe(config.stripe.privateKey)
@@ -10,8 +11,6 @@ export async function get({ request, url }) {
   const session_id = url.searchParams.get('session_id')
 
   const session = await stripe.checkout.sessions.retrieve(session_id)
-  const { customer, subscription } = session
-  const { product } = session.metadata
   console.log(session)
 
   if (parseInt(session.metadata.userId) !== userId) {
@@ -22,25 +21,31 @@ export async function get({ request, url }) {
   }
 
   const user = await db.user.findUnique({ where: { id: userId } })
+  const subscription = await stripe.subscriptions.retrieve(session.subscription)
 
-  // TODO create account, member
+  console.log(subscription)
+
+  let account, member
+
   await db.$transaction(async db => {
-    const account = await createAccount(db, {
+    account = await createAccount(db, {
       name: user.name,
-      product,
-      customer,
-      subscription
+      product: session.metadata.product,
+      customer: session.customer,
+      subscription: session.subscription,
+      paymentStatus: subscription.status.toUpperCase()
     })
 
-    await createOwner(db, account.id, user.id)
+    member = await createOwner(db, account.id, user.id)
   })
 
-  // TODO generate jwt
-  //
+  // TODO generate refresh token
+  const accessToken = sign({account, user})
+  const refreshToken = await generateRefreshToken({ id: member.id, userId: user.id, accountId: account.id })
   const redirectUrl = new URL(config.callbacks['signup.success'])
 
-  redirectUrl.searchParams.set('accessToken', 'eyXYZ')
-  redirectUrl.searchParams.set('refreshToken', 'eyXYZ')
+  redirectUrl.searchParams.set('accessToken', accessToken)
+  redirectUrl.searchParams.set('refreshToken', refreshToken)
 
   return {
     status: 303,
@@ -50,13 +55,14 @@ export async function get({ request, url }) {
   }
 }
 
-async function createAccount(db, { name, product, customer, subscription }) {
+async function createAccount(db, { name, product, customer, subscription, paymentStatus }) {
   return await db.account.create({
     data: {
       name,
       product,
       stripeCustomerId: customer,
-      stripeSubscriptionId: subscription
+      stripeSubscriptionId: subscription,
+      paymentStatus
     }
   })
 }

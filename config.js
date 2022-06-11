@@ -6,9 +6,13 @@ dotenv.config()
 export default {
 	domain: 'http://localhost:3002',
 	callbacks: {
-		'signup.success': 'http://localhost:3001/?success=true',
-		'signup.canceled': 'http://localhost:3001/?canceled=true',
-		'signup.failed': 'http://localhost:3001/?failed=true',
+		'signup.success': 'http://localhost:3001/?message=signup.success',
+		'signup.canceled': 'http://localhost:3001/?message=signup.success',
+		'signup.failed': 'http://localhost:3001/?message=signup.failed',
+		'signin.success': 'http://localhost:3001/?message=signin.success',
+		'signin.failed': 'http://localhost:3001/?message=signin.failed',
+		'signout.success': 'http://localhost:3001/?message=signout.success',
+		'signout.failed': 'http://localhost:3001/?message=signout.failed',
 	},
 	defaultProvider: 'bogus',
 	providers: {
@@ -43,4 +47,9 @@ export default {
 		public: await fs.promises.readFile('./idp.key.pub')
 	},
 
+	webhooks: {
+		'access.revoked': [
+			'http://localhost:3001/idp/events'
+		]
+	}
 }

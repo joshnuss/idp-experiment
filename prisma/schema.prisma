@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["interactiveTransactions"]
+  previewFeatures = ["interactiveTransactions", "extendedIndexes"]
 }
 
 datasource db {
@@ -11,13 +11,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum PaymentStatus {
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  UNPAID
+}
+
 model Account {
   id Int @id @default(autoincrement())
   name String
   members Member[]
+  refreshTokens RefreshToken[]
   product String
   stripeCustomerId String?
   stripeSubscriptionId String?
+  paymentStatus PaymentStatus?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -26,6 +38,7 @@ model Account {
 model User {
   id Int @id @default(autoincrement())
   memberships Member[]
+  refreshTokens RefreshToken[]
 
   email String @unique
   name String
@@ -37,6 +50,7 @@ model User {
 
 model Member {
   id Int @id @default(autoincrement())
+  refreshTokens RefreshToken[]
 
   account Account @relation(fields: [accountId], references: [id])
   accountId Int
@@ -48,4 +62,29 @@ model Member {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+
+  @@unique([ accountId, userId ])
+}
+
+model RefreshToken {
+  id Int @id @default(autoincrement())
+
+  account Account @relation(fields: [accountId], references: [id])
+  accountId Int
+
+  member Member @relation(fields: [memberId], references: [id])
+  memberId Int
+
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+
+  token String
+
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([accountId, userId, expiresAt(sort: Desc)])
+  @@index([memberId, expiresAt(sort: Desc)])
 }

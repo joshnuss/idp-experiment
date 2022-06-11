@@ -7,7 +7,7 @@ export async function get({ params, url }) {
   const period = url.searchParams.get('period') || defaultPeriod
 
   const oauthClient = createClient(params.provider, config)
-  const authorizeUrl = oauthClient.authorizeUrl(domain, { product, period })
+  const authorizeUrl = oauthClient.authorizeUrl(domain, { product, period, action: 'signup' })
 
   return {
     status: 303,
