@@ -32,7 +32,7 @@ export async function get({ request, url }) {
       subscription
     })
 
-    await assignOwner(db, account.id, user.id)
+    await createOwner(db, account.id, user.id)
   })
 
   // TODO generate jwt
@@ -61,7 +61,7 @@ async function createAccount(db, { name, product, customer, subscription }) {
   })
 }
 
-async function assignOwner(db, accountId, userId) {
+async function createOwner(db, accountId, userId) {
   return await db.member.create({
     data: { accountId, userId, owner: true }
   })
