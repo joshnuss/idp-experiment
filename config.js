@@ -13,6 +13,8 @@ export default {
 		'signin.failed': 'http://localhost:3001/?message=signin.failed',
 		'signout.success': 'http://localhost:3001/?message=signout.success',
 		'signout.failed': 'http://localhost:3001/?message=signout.failed',
+		'account.updated': 'http://localhost:3001/?message=account.updated',
+		'portal.return': 'http://localhost:3001/?message=portal.return'
 	},
 	defaultProvider: 'bogus',
 	providers: {
@@ -35,11 +37,19 @@ export default {
 				monthly: 'price_1L93V8HfKEQGgXe51CYFFltu',
 				yearly: 'price_1L93V8HfKEQGgXe51CYFFltu'
 			}
+		},
+		pro: {
+			id: 'prod_LrTkgRhGD2aUXc',
+			prices: {
+				monthly: 'price_1L9kmZHfKEQGgXe5ZMUmT07z',
+				yearly: 'price_1L9kmZHfKEQGgXe5OQmVcLyb'
+			}
 		}
 	},
 
 	stripe: {
-		privateKey: process.env['STRIPE_PRIVATE_KEY']
+		privateKey: process.env['STRIPE_PRIVATE_KEY'],
+		webhookSecret: process.env['STRIPE_WEBHOOK_SECRET']
 	},
 
 	keys: {
