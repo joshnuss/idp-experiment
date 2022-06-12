@@ -3,7 +3,7 @@ import { getCookieInfo, createExpiredCookie } from '$lib/cookies'
 import fetch from 'node-fetch'
 
 export async function get({ request }) {
-  const userId = getCookieInfo(request.headers.get('cookie'))
+  const { userId } = getCookieInfo(request.headers.get('cookie'))
 
   if (!userId) {
     return {

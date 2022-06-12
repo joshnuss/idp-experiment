@@ -1,12 +1,17 @@
 export function getCookieInfo(cookieString) {
   const cookies = Object.fromEntries(cookieString.split(';').map(record => record.trim().split('=')))
+  const cookie = cookies['idp']
+  const [userId, accountId] = cookie.split(',')
 
-  return parseInt(cookies['idp'])
+  return {
+    userId: parseInt(userId),
+    accountId: parseInt(accountId)
+  }
 }
 
-export function createCookie(user) {
+export function createCookie(user, account) {
   // TODO use Secure in prod and encrypt
-  return `idp=${user.id}; Domain=localhost; Path=/; SameSite=Lax; HttpOnly; Expires=Wed, 21 Oct 2023 07:28:00 GMT`
+  return `idp=${user.id},${account?.id}; Domain=localhost; Path=/; SameSite=Lax; HttpOnly; Expires=Wed, 21 Oct 2023 07:28:00 GMT`
 }
 
 export function createExpiredCookie() {

@@ -1,5 +1,5 @@
 import config from '$config'
-import { getCookieInfo } from '$lib/cookies'
+import { getCookieInfo, createCookie } from '$lib/cookies'
 import db from '$lib/db'
 import { sign, generateRefreshToken } from '$lib/jwt'
 import Stripe from 'stripe'
@@ -7,7 +7,7 @@ import Stripe from 'stripe'
 const stripe = new Stripe(config.stripe.privateKey)
 
 export async function get({ request, url }) {
-  const userId = getCookieInfo(request.headers.get('cookie'))
+  const { userId } = getCookieInfo(request.headers.get('cookie'))
   const session_id = url.searchParams.get('session_id')
 
   const session = await stripe.checkout.sessions.retrieve(session_id)
@@ -39,7 +39,6 @@ export async function get({ request, url }) {
     member = await createOwner(db, account.id, user.id)
   })
 
-  // TODO generate refresh token
   const accessToken = sign({account, user})
   const refreshToken = await generateRefreshToken({ id: member.id, userId: user.id, accountId: account.id })
   const redirectUrl = new URL(config.callbacks['signup.success'])
@@ -50,6 +49,7 @@ export async function get({ request, url }) {
   return {
     status: 303,
     headers: {
+      'set-cookie': createCookie(user, account),
       location: redirectUrl.toString()
     }
   }

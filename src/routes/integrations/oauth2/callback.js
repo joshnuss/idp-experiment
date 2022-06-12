@@ -33,30 +33,36 @@ export async function get({ url }) {
       }
     }
 
-    let redirectUrl
-
     if (action == 'signup') {
       await upsertUser({ email, name, provider })
 
-      redirectUrl = new URL(`/checkout?product=${product}&period=${period}`, config.domain)
+      const redirectUrl = new URL(`/checkout?product=${product}&period=${period}`, config.domain)
+
+      return {
+        status: 302,
+        headers: {
+          'set-cookie': createCookie(user),
+          location: redirectUrl.toString()
+        }
+      }
     } else if (action == 'signin') {
       const member = user.memberships[0]
       const accessToken = sign(member)
       const refreshToken = await generateRefreshToken(member)
-      redirectUrl = new URL(config.callbacks['signin.success'])
+      const redirectUrl = new URL(config.callbacks['signin.success'])
 
       redirectUrl.searchParams.set('accessToken', accessToken)
       redirectUrl.searchParams.set('refreshToken', refreshToken)
-    }
 
-    // TODO: check if existing user with different provider.
-    // if true, block login, must use the same provider
+      // TODO: check if existing user with different provider.
+      // if true, block login, must use the same provider
 
-    return {
-      status: 302,
-      headers: {
-        'set-cookie': createCookie(user),
-        location: redirectUrl.toString()
+      return {
+        status: 302,
+        headers: {
+          'set-cookie': createCookie(user, member.account),
+          location: redirectUrl.toString()
+        }
       }
     }
   } else {

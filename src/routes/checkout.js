@@ -8,7 +8,7 @@ const stripe = new Stripe(config.stripe.privateKey)
 export async function get({ request, url }) {
   const product = url.searchParams.get('product')
   const period = url.searchParams.get('period')
-  const userId = getCookieInfo(request.headers.get('cookie'))
+  const { userId } = getCookieInfo(request.headers.get('cookie'))
   const user = await db.user.findUnique({ where: { id: userId } })
 
   const price = config.products[product]?.prices[period] 
