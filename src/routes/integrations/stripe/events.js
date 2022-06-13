@@ -62,9 +62,9 @@ async function updateSubscription(subscription) {
       data: {
         product,
         paymentStatus: subscription.status.toUpperCase(),
-        cancelAt: subscription.cancel_at,
-        canceledAt: subscription.canceled_at,
-        closedAt: subscription.ended_at,
+        cancelAt: parseTimestamp(subscription.cancel_at),
+        canceledAt: parseTimestamp(subscription.canceled_at),
+        closedAt: parseTimestamp(subscription.ended_at),
       }
     })
   }
@@ -80,4 +80,11 @@ function findProduct(newPrice) {
       }
     }
   }
+}
+
+function parseTimestamp(timestamp) {
+  if (timestamp == null)
+    return null
+
+  return new Date(timestamp * 1000)
 }
