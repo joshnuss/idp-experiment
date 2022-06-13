@@ -9,12 +9,13 @@ https://1000experiments.dev/tag/idp
 
 ## Features
 
-- OAuth providers
-- Integrated billing with Stripe (checkout, billing portal, handling webhooks)
+- Supports multiple OAuth providers
+- Integrated billing with Stripe Checkout
+- Changing and canceling subscriptions via Stripe Billing Portal
 - JWT tokens containing billing info (plan, stripe ids, subscription status)
-- Open source
+- Open source.
 - Deployable as cloud functions or self-hosted.
-- Can run in a Docker container within same data-center as app.
+- Can run in a Docker container within same data-center/VPC as app.
 - Multiple users per account
 - Multiple accounts per user
 
@@ -23,7 +24,6 @@ https://1000experiments.dev/tag/idp
 Assuming the first part works out well...
 
 - SSO (Single sign on)
-- Close account form
 - Sign in with magic links
 - Sign in with username/password
 - MFA (multi-factor authentication)
