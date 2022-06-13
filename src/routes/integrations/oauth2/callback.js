@@ -29,7 +29,7 @@ export async function get({ url }) {
     if (user && user.provider !== provider) {
       return {
         status: 401,
-        message: 'unauthorized provider'
+        message: 'Unauthorized provider'
       }
     }
 
@@ -47,6 +47,14 @@ export async function get({ url }) {
       }
     } else if (action == 'signin') {
       const member = user.memberships[0]
+
+      if (member.account.closedAt) {
+        return {
+          status: 401,
+          body: "Unauthorized"
+        }
+      }
+
       const accessToken = sign(member)
       const refreshToken = await generateRefreshToken(member)
       const redirectUrl = new URL(config.callbacks['signin.success'])

@@ -1,5 +1,6 @@
 import config from '$config'
 import db from '$lib/db'
+import { revokeTokens } from '$lib/jwt'
 import Stripe from 'stripe'
 
 const stripe = new Stripe(config.stripe.privateKey)
@@ -27,7 +28,12 @@ export async function post({ request }) {
     case 'customer.updated':
       await updateCustomer(object)
       break
+
     case 'customer.subscription.updated':
+      await updateSubscription(object)
+      break
+
+    case 'customer.subscription.deleted':
       await updateSubscription(object)
       break
   }
@@ -48,13 +54,20 @@ async function updateSubscription(subscription) {
     }
   })
 
-  await db.account.update({
-    where: { id: account.id },
-    data: {
-      product,
-      paymentStatus: subscription.status.toUpperCase()
-    }
-  })
+  if (account) {
+    await revokeTokens({ accountId: account.id })
+
+    await db.account.update({
+      where: { id: account.id },
+      data: {
+        product,
+        paymentStatus: subscription.status.toUpperCase(),
+        cancelAt: subscription.cancel_at,
+        canceledAt: subscription.canceled_at,
+        closedAt: subscription.ended_at,
+      }
+    })
+  }
 
   console.log(`✅ Subscription updated ${subscription.id}`)
 }

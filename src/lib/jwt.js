@@ -25,7 +25,7 @@ export function sign({account, user}) {
 export async function generateRefreshToken({accountId, userId, id: memberId}) {
   const token = nanoid(128)
 
-  await revokeTokens(memberId)
+  await revokeTokens({ memberId })
   await createToken({ accountId, userId, memberId, token })
 
   return token
@@ -43,10 +43,10 @@ async function createToken({ accountId, userId, memberId, token }) {
   })
 }
 
-async function revokeTokens(memberId) {
+export async function revokeTokens(where) {
   return await db.refreshToken.updateMany({
     where: {
-      memberId,
+      ...where,
       revokedAt: null,
       expiresAt: {
         gt: new Date()
