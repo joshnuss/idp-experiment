@@ -69,6 +69,8 @@ Make sure to copy the webhook signing secret `whsec_` to the `.env` file.
 
 ## Links
 
+The IDP provides the following links:
+
 - Signup `/signup`
 - Signin `/signin`
 - Signout `/signout`
