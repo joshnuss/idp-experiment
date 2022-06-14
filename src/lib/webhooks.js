@@ -1,6 +1,7 @@
 import config from '$config'
 import fetch from 'node-fetch'
 
+// TODO: use a queuing solution
 export async function deliverWebhook(topic, message) {
   const webhooks = config.webhooks[topic] || []
 
