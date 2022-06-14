@@ -29,6 +29,46 @@ Assuming the first part works out well...
 - MFA (multi-factor authentication)
 - Reporting on low-usage accounts that are in danger of churning.
 
+## Setup
+
+Create the database
+
+```javascript
+npx prisma db push
+```
+
+Adjust the `config.js` and `.env`:
+
+```bash
+# copy example env
+cp .env.example .env
+
+# open in editor
+vi -O config.js .env
+```
+
+Run the dev server
+
+```bash
+pnpm dev --https
+```
+
+Tunnel Stripe events
+
+```bash
+stripe listen --forward-to https://localhost:3000/integrations/stripe/events --skip-verify
+```
+
+Make sure to copy the webhook signing secret `whsec_` to the `.env` file.
+
+## Links
+
+- Signup `/signup`
+- Signin `/signin`
+- Signout `/signout`
+- Billing portal `/account/portal`
+- Change plan `/account/switch/:product`
+
 ## License
 
 BSL
