@@ -31,7 +31,7 @@ Assuming the first part works out well...
 
 ## Setup
 
-Create the database
+Create the database:
 
 ```javascript
 npx prisma db push
@@ -47,13 +47,13 @@ cp .env.example .env
 vi -O config.js .env
 ```
 
-Run the dev server
+Run the dev server:
 
 ```bash
 pnpm dev --https
 ```
 
-Tunnel Stripe events
+Tunnel Stripe events:
 
 ```bash
 stripe listen --forward-to https://localhost:3000/integrations/stripe/events --skip-verify
