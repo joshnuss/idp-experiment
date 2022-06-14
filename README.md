@@ -37,6 +37,12 @@ Create the database:
 npx prisma db push
 ```
 
+Generate the private and public keys:
+
+```bash
+./script/generate-key.sh
+```
+
 Adjust the `config.js` and `.env`:
 
 ```bash
