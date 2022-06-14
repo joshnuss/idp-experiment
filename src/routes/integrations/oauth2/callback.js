@@ -14,7 +14,7 @@ export async function get({ url }) {
     const user_info = await oauthClient.fetchUserInfo(result.payload.id_token)
     const { name, email } = user_info.payload
     const { product, period } = decodeJSON(result.payload.state)
-    const user = await db.user.findUnique({
+    let user = await db.user.findUnique({
       where: { email },
       include: {
         memberships: {
@@ -34,7 +34,7 @@ export async function get({ url }) {
     }
 
     if (action == 'signup') {
-      await upsertUser({ email, name, provider })
+      user = await upsertUser({ email, name, provider })
 
       const redirectUrl = new URL(`/checkout?product=${product}&period=${period}`, config.domain)
 
@@ -88,7 +88,7 @@ function decodeJSON(encodedString) {
 }
 
 async function upsertUser({ email, name, provider }) {
-  await db.user.upsert({
+  return await db.user.upsert({
     where: {
       email
     },
