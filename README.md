@@ -77,6 +77,11 @@ The IDP provides the following links:
 - Billing portal `/account/portal`
 - Change plan `/account/switch/:product`
 
+## Example app
+
+Barebones example app:
+https://github.com/joshnuss/idp-example-app
+
 ## License
 
 BSL
