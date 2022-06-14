@@ -4,17 +4,17 @@ import fs from 'fs'
 dotenv.config()
 
 export default {
-	domain: 'http://localhost:3002',
+	domain: 'https://id.app.local:3002',
 	callbacks: {
-		'signup.success': 'http://localhost:3001/?message=signup.success',
-		'signup.canceled': 'http://localhost:3001/?message=signup.success',
-		'signup.failed': 'http://localhost:3001/?message=signup.failed',
-		'signin.success': 'http://localhost:3001/?message=signin.success',
-		'signin.failed': 'http://localhost:3001/?message=signin.failed',
-		'signout.success': 'http://localhost:3001/?message=signout.success',
-		'signout.failed': 'http://localhost:3001/?message=signout.failed',
-		'account.updated': 'http://localhost:3001/?message=account.updated',
-		'portal.return': 'http://localhost:3001/?message=portal.return'
+		'signup.success': 'https://app.local:3003/?message=signup.success',
+		'signup.canceled': 'https://app.local:3003/?message=signup.success',
+		'signup.failed': 'https://app.local:3003/?message=signup.failed',
+		'signin.success': 'https://app.local:3003/?message=signin.success',
+		'signin.failed': 'https://app.local:3003/?message=signin.failed',
+		'signout.success': 'https://app.local:3003/?message=signout.success',
+		'signout.failed': 'https://app.local:3003/?message=signout.failed',
+		'account.updated': 'https://app.local:3003/?message=account.updated',
+		'portal.return': 'https://app.local:3003/?message=portal.return'
 	},
 	defaultProvider: 'bogus',
 	providers: {
@@ -59,7 +59,6 @@ export default {
 
 	webhooks: {
 		'access.revoked': [
-			'http://localhost:3001/idp/events'
 		]
 	}
 }
