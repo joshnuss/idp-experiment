@@ -3,6 +3,7 @@ import db from '$lib/db'
 import jwt from 'jsonwebtoken'
 import { nanoid } from 'nanoid'
 import { add } from 'date-fns'
+import { deliverWebhook } from '$lib/webhooks'
 
 export function sign({account, user}) {
   const data = {
@@ -44,7 +45,7 @@ async function createToken({ accountId, userId, memberId, token }) {
 }
 
 export async function revokeTokens(where) {
-  return await db.refreshToken.updateMany({
+  const tokens = await db.refreshToken.updateMany({
     where: {
       ...where,
       revokedAt: null,
@@ -54,4 +55,9 @@ export async function revokeTokens(where) {
     },
     data: { revokedAt: new Date() }
   })
+
+  // TODO: add list of tokens
+  await deliverWebhook('access.revoked', { tokens: [] })
+
+  return tokens
 }

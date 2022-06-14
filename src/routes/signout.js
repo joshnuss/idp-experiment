@@ -1,9 +1,9 @@
 import config from '$config'
 import { getCookieInfo, createExpiredCookie } from '$lib/cookies'
-import fetch from 'node-fetch'
+import { revokeTokens } from '$lib/jwt'
 
 export async function get({ request }) {
-  const { userId } = getCookieInfo(request.headers.get('cookie'))
+  const { userId, accountId } = getCookieInfo(request.headers.get('cookie'))
 
   if (!userId) {
     return {
@@ -14,7 +14,7 @@ export async function get({ request }) {
     }
   }
 
-  await deliverWebhooks()
+  await revokeTokens({ userId, accountId })
 
   return {
     status: 303,
@@ -23,12 +23,4 @@ export async function get({ request }) {
       location: config.callbacks['signout.success']
     }
   }
-}
-
-async function deliverWebhooks() {
-  const webhooks = config.webhooks['access.revoked'] || []
-
-  const promises = webhooks.map(url => fetch(url, { method: 'POST' }))
-
-  await Promise.all(promises)
 }
