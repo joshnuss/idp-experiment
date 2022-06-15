@@ -1,5 +1,6 @@
 import config from '$config'
 import db from '$lib/db'
+import { sign, generateRefreshToken } from '$lib/jwt'
 import { getCookieInfo } from '$lib/cookies'
 import Stripe from 'stripe'
 
@@ -12,7 +13,7 @@ export async function get({ url, request, params }) {
 
   const { accountId, userId } = getCookieInfo(request.headers.get('cookie'))
   const account = await db.account.findUnique({ where: { id: accountId } })
-  const member = await db.member.findFirst({ where: { accountId, userId } })
+  let member = await db.member.findFirst({ where: { accountId, userId } })
 
   if (!member.owner) {
     return {
@@ -38,10 +39,18 @@ export async function get({ url, request, params }) {
     }
   })
 
+  member = await db.member.findUnique({ where: { id: member.id }, include: { user: true, account: true } })
+  const accessToken = sign(member)
+  const refreshToken = await generateRefreshToken(member)
+  const redirectUrl = new URL(config.callbacks['account.updated'])
+
+  redirectUrl.searchParams.set('accessToken', accessToken)
+  redirectUrl.searchParams.set('refreshToken', refreshToken)
+
   return {
     status: 303,
     headers: {
-      location: config.callbacks['account.updated']
+      location: redirectUrl.toString()
     }
   }
 }
