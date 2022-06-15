@@ -17,7 +17,7 @@ export async function get({ url, request, params }) {
   if (!member.owner) {
     return {
       status: 401,
-      message: "Unauthorized"
+      body: "Unauthorized"
     }
   }
 
