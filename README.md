@@ -67,6 +67,9 @@ stripe listen --forward-to https://localhost:3000/integrations/stripe/events --s
 
 Make sure to copy the webhook signing secret `whsec_` to the `.env` file.
 
+Run the fake OAuth server, which can be download from here:
+https://github.com/patientsknowbest/fake-oauth2-server
+
 ## Links
 
 Most operations are available to users via links. Here is a list:
